@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
    nginx:
-      image: nwe:latest
+      image: nginx:latest
       build: .
       container_name: webserver
       volumes:
