@@ -1,0 +1,40 @@
+version: '3.3'
+
+services:
+   nginx:
+      image: nwe:latest
+      build: .
+      container_name: webserver
+      volumes:
+         - ./config/conf.d:/etc/nginx/conf.d
+         - ./config/nginx.conf:/etc/nginx/nginx.conf
+         - ./config/sites-enabled:/etc/nginx/sites-enabled
+         - ./config/sites-available:/etc/nginx/sites-available
+         - ./html:/var/www/html
+         - ./certbot:/etc/letsencrypt/
+      ports:
+         - "80:80"
+         - "443:443"
+      networks:
+         - websites
+   php:
+      image: php:7-fpm
+      container_name: webserver-php
+      volumes:
+         - ./html:/var/www/html
+      ports:
+         - "9000:9000"
+      networks:
+         websites:
+            ipv4_address: 172.20.0.9
+
+   certbot:
+     image: certbot/certbot:latest
+     volumes:
+       - ./html:/var/www/certbot/:rw
+       - ./certbot:/etc/letsencrypt/:rw
+
+networks:
+   websites:
+    name: websites
+    external: true
