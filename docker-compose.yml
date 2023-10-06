@@ -17,13 +17,16 @@ services:
          - "443:443"
       networks:
          - websites
+      # https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+      command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
    php:
       image: php:7-fpm
       container_name: webserver-php
       volumes:
          - ./html:/var/www/html
-      ports:
-         - "9000:9000"
+      # ports:
+         # - "9000:9000"
       networks:
          websites:
             ipv4_address: 172.20.0.9
@@ -33,6 +36,8 @@ services:
      volumes:
        - ./html:/var/www/certbot/:rw
        - ./certbot:/etc/letsencrypt/:rw
+     # https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
    websites:
